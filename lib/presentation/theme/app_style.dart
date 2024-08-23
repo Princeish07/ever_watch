@@ -1,6 +1,4 @@
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -71,7 +69,7 @@ class AppStyles {
             fontSize: 18,
             color: Colors.white,
             fontFamily: AppFonts.fontSemibold)),
-        foregroundColor: MaterialStatePropertyAll<Color>(Colors.white));
+        foregroundColor: const MaterialStatePropertyAll<Color>(Colors.white));
   }
   ButtonStyle mainLargeButtonStyle() {
     return  ButtonStyle(
@@ -82,7 +80,7 @@ class AppStyles {
         ),
         backgroundColor:
         const MaterialStatePropertyAll<Color>(AppColors.mainButtonColor),
-        padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(15)),
+        padding: const MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(15)),
         textStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(
             fontSize: 18,
             color: Colors.white,

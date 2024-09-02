@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "159085237004",
+    "project_id": "everwatch-21292",
+    "storage_bucket": "everwatch-21292.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159085237004:android:f740ce11776eccd64a2f29",
+        "android_client_info": {
+          "package_name": "com.example.everwatch.ever_watch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTuxQWXuQaBkRgHtryb8z0U81C_ZOdXls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

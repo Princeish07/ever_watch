@@ -1,8 +1,16 @@
 import 'package:ever_watch/presentation/ui/VideoPlayer.dart';
+import 'package:ever_watch/presentation/ui/login/widgets/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'core/service_locator/service_locator.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  serviceLocatorSetup();
+  await Firebase.initializeApp();
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +40,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  const HomePage1(),
+      home: ProviderScope(child: LoginScreen()),
     );
   }
 }

@@ -4,4 +4,8 @@ class AppAssets{
   static const icThreeDots = "assets/icon/ic_three_dots.svg";
 
 
+
+  //Image
+  static const menImage = "assets/logo/men_image.jpg";
+
 }

@@ -1,6 +1,8 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../presentation/theme/app_colors.dart';
 
 //Method to capitalize the String
@@ -40,7 +42,7 @@ void showToast(String message) {
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
       backgroundColor: AppColors.mainBgColor,
-      textColor: AppColors.mainButtonColor,
+      textColor: AppColors().mainButtonColor,
       fontSize: 16.0
   );
 }
@@ -90,3 +92,4 @@ String platformString(){
 
 
 }
+

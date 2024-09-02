@@ -1,8 +1,12 @@
 class AppString{
-  static const descriptionText = "Description";
-  static const publishedDateText = "Published Date : ";
-  static const readStoryText = "Read Story";
-  static const variableText = "Variables";
-  static const statsText = "Stats";
+  static const loginText = "Login";
+  static const registerText = "Register";
 
+  static const enterEmailHint = "Enter email";
+  static const enterPassword = "Enter password";
+  static const enterName = "Enter name";
+  static const enterPhone = "Enter phone";
+  static const enterConfirmPassword = "Enter confirm password";
+  static const loginButtonText = "Login";
+  static const registerButtonText = "Login";
 }

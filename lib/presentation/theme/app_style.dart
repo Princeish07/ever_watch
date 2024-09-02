@@ -8,7 +8,7 @@ import 'app_fonts.dart';
 
 class AppStyles {
   TextStyle mainHeadingStyle(Color color) {
-    return TextStyle(fontSize: 18, color: color, fontFamily: AppFonts.fontBold);
+    return TextStyle(fontSize: 25, color: color, fontFamily: AppFonts.fontBold);
   }
 
   TextStyle mainTitleStyle(Color color) {
@@ -64,7 +64,7 @@ class AppStyles {
             )
         ),
         backgroundColor:
-        const MaterialStatePropertyAll<Color>(AppColors.mainButtonColor),
+         MaterialStatePropertyAll<Color>(AppColors().mainButtonColor!),
         textStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(
             fontSize: 18,
             color: Colors.white,
@@ -79,7 +79,7 @@ class AppStyles {
             )
         ),
         backgroundColor:
-        const MaterialStatePropertyAll<Color>(AppColors.mainButtonColor),
+         MaterialStatePropertyAll<Color>(AppColors().mainButtonColor!),
         padding: const MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(15)),
         textStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(
             fontSize: 18,

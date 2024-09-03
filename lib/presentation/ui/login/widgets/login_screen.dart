@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:ever_watch/core/other/general_utils.dart';
 import 'package:ever_watch/presentation/common_widgets/common_loader.dart';
 import 'package:ever_watch/presentation/common_widgets/error_message.dart';
 import 'package:ever_watch/presentation/common_widgets/main_button.dart';
@@ -25,6 +26,10 @@ class LoginScreen extends ConsumerWidget {
     ref.listen(loginProvider, (previous, next) {
       if(next.isAuthenticated==true){
         Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+      }else{
+        if(loginState.errorMessage==null || next.errorMessage?.isNotEmpty==true){
+          showToast(next.errorMessage ?? "");
+        }
       }
     });
 
@@ -79,9 +84,9 @@ class LoginScreen extends ConsumerWidget {
             if(loginState.isLoading==true) ...[
               CommonLoader()
             ],
-            if(loginState.errorMessage==null || loginState.errorMessage!.isNotEmpty) ...[
-              ErrorMessage(errorMessage: loginState.errorMessage,)
-            ]
+            // if(loginState.errorMessage==null || loginState.errorMessage!.isNotEmpty) ...[
+            //   ErrorMessage(errorMessage: loginState.errorMessage,)
+            // ]
           ],
         ),
       ),

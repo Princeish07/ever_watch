@@ -1,5 +1,7 @@
 import 'package:ever_watch/presentation/ui/VideoPlayer.dart';
+import 'package:ever_watch/presentation/ui/home/widgets/home_screen.dart';
 import 'package:ever_watch/presentation/ui/login/widgets/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ProviderScope(child: LoginScreen()),
+      home: ProviderScope(child:FirebaseAuth.instance.currentUser==null ? LoginScreen() : HomeScreen()),
     );
   }
 }

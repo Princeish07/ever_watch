@@ -31,13 +31,13 @@ class RegisterProvider extends StateNotifier<RegisterState>{
       // state = LoginState(isAuthenticated: false,isLoading: false,errorMessage: "Please enter ");
 
     }
-    if (email == null || email.isEmpty) {
+    else if (email == null || email.isEmpty) {
       showToast("Please enter email");
       // state = LoginState(isAuthenticated: false,isLoading: false,errorMessage: "Please enter ");
 
     }
 
-    if (phone == null || phone.isEmpty) {
+   else  if (phone == null || phone.isEmpty) {
       showToast("Please enter phone");
       // state = LoginState(isAuthenticated: false,isLoading: false,errorMessage: "Please enter ");
 
@@ -67,10 +67,18 @@ class RegisterProvider extends StateNotifier<RegisterState>{
 
 
     }
+    else if(_photo==null){
+      showToast("Please upload profile image");
+
+    }
     else {
       state = RegisterState(isAuthenticated: false, isLoading: true);
-     var data = await registerRepository?.createUser(email: email,phone: phone,name: name,profilePicture: state.profilePicture,password: password);
-      print(data.toString());
+      await _uploadImage();
+
+      var data = await registerRepository?.createUser(email: email,phone: phone,name: name,profilePicture: state.profilePicture,password: password);
+
+
+     print(data.toString());
       if(data?.status==Status.SUCCESS) {
         // await Future.delayed(const Duration(seconds: 4));
         state = RegisterState(isAuthenticated: true, isLoading: false);
@@ -96,7 +104,9 @@ class RegisterProvider extends StateNotifier<RegisterState>{
     // setState(() {
       if (pickedFile != null) {
         _photo = File(pickedFile.path);
-        _uploadImage();
+        state = state.copyWith(imageFile: _photo);
+
+        // _uploadImage();
       } else {
         print('No image selected.');
       }
@@ -111,7 +121,6 @@ class RegisterProvider extends StateNotifier<RegisterState>{
       if (pickedFile != null) {
         _photo = File(pickedFile.path);
         state = state.copyWith(imageFile: _photo);
-        _uploadImage();
       } else {
         print('No image selected.');
       }
@@ -122,7 +131,10 @@ class RegisterProvider extends StateNotifier<RegisterState>{
 
 
   Future<void> _uploadImage() async {
-    if (_photo == null) return;
+    if (_photo == null) {
+
+      // state = state.copyWith(errorMessage: "Please select image");
+      return;}
 
     try {
       // Create a unique filename for the image

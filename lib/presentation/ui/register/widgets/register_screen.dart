@@ -1,3 +1,4 @@
+import 'package:ever_watch/core/other/general_utils.dart';
 import 'package:ever_watch/presentation/common_widgets/main_button.dart';
 import 'package:ever_watch/presentation/common_widgets/text_input_field.dart';
 import 'package:ever_watch/presentation/theme/app_assets.dart';
@@ -39,8 +40,12 @@ class RegisterScreen extends ConsumerWidget {
     final registrationState = ref.watch(registerProvider);
     ref.listen(registerProvider, (previous, next) {
       if (next.isAuthenticated == true) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        showToast("Registered successfully");
+        Navigator.pop(context);
+      }
+
+      if(next.errorMessage!=null && next.errorMessage?.isNotEmpty==true){
+        showToast(next.errorMessage!);
       }
     });
     return Scaffold(
@@ -266,12 +271,12 @@ class RegisterScreen extends ConsumerWidget {
           if (registrationState.isLoading == true) ...[
             CommonLoader()
           ],
-          if (registrationState.errorMessage != null &&
-              registrationState.errorMessage!.isNotEmpty) ...[
-            ErrorMessage(
-              errorMessage: registrationState.errorMessage,
-            )
-          ],
+          // if (registrationState.errorMessage != null &&
+          //     registrationState.errorMessage!.isNotEmpty) ...[
+          //   ErrorMessage(
+          //     errorMessage: registrationState.errorMessage,
+          //   )
+          // ],
         ]),
       ),
     );

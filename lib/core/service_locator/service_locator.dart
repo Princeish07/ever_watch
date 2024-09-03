@@ -1,9 +1,11 @@
 
+import 'package:ever_watch/data/repository/login_repository_impl.dart';
 import 'package:ever_watch/data/repository/register_repository_impl.dart';
 import 'package:ever_watch/domain/repository/register_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../domain/repository/login_repository.dart';
 import '../../presentation/ui/register/provider/register_provider.dart';
 import '../../presentation/ui/register/state/register_state.dart';
 
@@ -18,6 +20,7 @@ void serviceLocatorSetup() {
 
 registerRepository() {
   serviceLocator.registerLazySingleton<RegisterRepository>(() => RegisterRepositoryImpl());
+  serviceLocator.registerLazySingleton<LoginRepository>(() => LoginRepositoryImpl());
 
 }
 

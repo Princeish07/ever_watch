@@ -6,7 +6,7 @@ class ErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.red,
+      color: Colors.black.withOpacity(0.4),
       height: MediaQuery.of(context).size.height,
       child:  Center(
         child: Text(errorMessage!),

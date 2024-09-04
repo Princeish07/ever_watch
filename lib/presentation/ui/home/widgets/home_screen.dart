@@ -5,6 +5,8 @@ import 'package:ever_watch/presentation/ui/login/widgets/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:core';
+import 'package:ever_watch/core/other/resource.dart';
 
 import '../../../common_widgets/common_bottom_navigation_bar.dart';
 import '../../../theme/app_colors.dart';

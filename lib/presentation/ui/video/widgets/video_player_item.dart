@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
+import 'package:ever_watch/presentation/ui/video/provider/video_provider.dart';
 // class VideoPlayerItem extends StatefulWidget {
 //   const VideoPlayerItem({super.key});
 //
@@ -48,13 +49,24 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    var state = ref.watch(videoProvider);
+
     return Container(
       width: size.width,
       height: size.height,
       decoration: const BoxDecoration(
         color: Colors.black
       ),
-      child: VideoPlayer(controller)
+      child: Stack(
+        children: [
+          VideoPlayer(controller),
+        , GestureDetector(onTap:(){
+      // ref.read(videoProvider.notifier).
+    },child: Container(color: Colors.transparent,width: MediaQuery.of(context).size.width,
+    height: MediaQuery.of(context).size.height/1.5,child: state.isPlaying==false? Icon(Icons.play_arrow,color: Colors.white,size: 60,) : SizedBox.shrink()))
+    ,
+        ],
+      )
     );
   }
 }

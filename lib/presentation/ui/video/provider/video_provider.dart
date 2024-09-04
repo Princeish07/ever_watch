@@ -5,6 +5,8 @@ import 'package:ever_watch/data/repository/video_repository_impl.dart';
 import 'package:ever_watch/data/model/video_model.dart';
 import 'dart:core';
 import 'package:ever_watch/core/other/resource.dart';
+import 'dart:async';
+import 'package:video_player/video_player.dart';
 
 class VideoProvider extends StateNotifier<VideoState>{
   VideoRepository? videoRepository;
@@ -16,7 +18,7 @@ class VideoProvider extends StateNotifier<VideoState>{
    state = state.copyWith(videoListResult: videoList!);
   }
 
-  Future<void> playPauseVideo(VideoPlayerController controller){
+   playPauseVideo(VideoPlayerController controller){
     if(state.isPlaying==true){
       controller.pause();
     }else{

@@ -59,9 +59,9 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem> {
       ),
       child: Stack(
         children: [
-          VideoPlayer(controller),
+          VideoPlayer(controller)
         , GestureDetector(onTap:(){
-      // ref.read(videoProvider.notifier).
+      ref.read(videoProvider.notifier).playPauseVideo(controller);
     },child: Container(color: Colors.transparent,width: MediaQuery.of(context).size.width,
     height: MediaQuery.of(context).size.height/1.5,child: state.isPlaying==false? Icon(Icons.play_arrow,color: Colors.white,size: 60,) : SizedBox.shrink()))
     ,

@@ -20,21 +20,23 @@ import 'package:ever_watch/presentation/ui/video/provider/video_provider.dart';
 
 class VideoPlayerItem extends ConsumerStatefulWidget {
   String? videoUrl;
-   VideoPlayerItem({super.key,this.videoUrl});
+  void Function()? onDoubleTap;
+   VideoPlayerItem({super.key,this.videoUrl,this.onDoubleTap});
 
   @override
   ConsumerState<VideoPlayerItem> createState() => _VideoPlayerItemState();
 }
 
-class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem> {
+class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with SingleTickerProviderStateMixin{
   late VideoPlayerController controller;
+  bool _isHeartVisible = false;
 
   @override
   void initState() {
     super.initState();
     controller = VideoPlayerController.network(widget.videoUrl!)..initialize().then((value){
       controller.play();
-      controller.setVolume(1);
+      controller.setVolume(0);
     });
     controller.play();
     
@@ -59,14 +61,63 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem> {
       ),
       child: Stack(
         children: [
-          VideoPlayer(controller)
-        , GestureDetector(onTap:(){
-      ref.read(videoProvider.notifier).playPauseVideo(controller);
-    },child: Container(color: Colors.transparent,width: MediaQuery.of(context).size.width,
-    height: MediaQuery.of(context).size.height/1.5,child: state.isPlaying==false? Icon(Icons.play_arrow,color: Colors.white,size: 60,) : SizedBox.shrink()))
-    ,
+
+
+          VideoPlayer(controller),
+    //     , GestureDetector(onTap:(){
+    //   ref.read(videoProvider.notifier).playPauseVideo(controller);
+    // },child: Container(color: Colors.transparent,width: MediaQuery.of(context).size.width,
+    // height: MediaQuery.of(context).size.height/1.5,child: state.isPlaying==false? Icon(Icons.play_arrow,color: Colors.white,size: 60,) : SizedBox.shrink()))
+    // ,
+          GestureDetector(
+            onDoubleTap: (){
+              _showHeartAnimation();
+              widget.onDoubleTap!();
+            },
+            onTap: (){
+              ref.read(videoProvider.notifier).playPauseVideo(controller);
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+
+              color: Colors.transparent // Placeholder for video or other content
+              // color: Colors.transparent // Placeholder for video or other content
+              ,child: state.isPlaying==false? Icon(Icons.play_arrow,color: Colors.white,size: 60,) : SizedBox.shrink()),
+
+            // ),
+          ),
+
+          // Heart animation
+          Center(
+            child: AnimatedOpacity(
+              opacity: _isHeartVisible ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 300),
+              child: Icon(
+                Icons.favorite,
+                color: Colors.red,
+                size: 100.0,
+              ),
+            ),
+          ),
         ],
       )
     );
+  }
+
+  // Method to show heart animation
+  void _showHeartAnimation() {
+    setState(() {
+      _isHeartVisible = true;
+    });
+
+
+    // Hide the heart animation after a short duration
+    Future.delayed(Duration(milliseconds: 2000), () {
+      setState(() {
+        _isHeartVisible = false;
+      });
+
+    });
   }
 }

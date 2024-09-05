@@ -6,7 +6,7 @@ class VideoState{
   Resource<List<VideoModel>>? videoListResult;
   bool? isPlaying;
 
-  VideoState({this.videoListResult,this.isPlaying});
+  VideoState({this.videoListResult,this.isPlaying=true});
 
   VideoState copyWith({Resource<List<VideoModel>>? videoListResult,bool? isPlaying}){
     return VideoState(videoListResult: videoListResult ?? this.videoListResult,isPlaying: isPlaying ?? this.isPlaying);

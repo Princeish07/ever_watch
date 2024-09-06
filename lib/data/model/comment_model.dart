@@ -28,11 +28,11 @@ class CommentModel {
 
   };
 
-  CommentModel fromMap(Map<String, dynamic> map) {
+  CommentModel fromJson(Map<String, dynamic> map) {
     return CommentModel(
         username: map["username"] as String,
         comment: map["comment"] as String,
-        datePublished: map["date_published"] as String,
+        datePublished: map["date_published"],
         likes: map["likes"],
         profilePhoto: map["profile_picture"] as String,
         uid: map["uid"] as String,

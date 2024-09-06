@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ever_watch/presentation/theme/app_colors.dart';
+import 'package:ever_watch/data/model/comment_model.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ever_watch/presentation/ui/comment/provider/comment_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CommentItemView extends ConsumerWidget {
-  const CommentItemView({super.key});
+  CommentModel? itemValue;
+  String? id;
+   CommentItemView({super.key,this.itemValue,this.id});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,11 +30,11 @@ class CommentItemView extends ConsumerWidget {
               height: 50,
               padding: EdgeInsets.all(1),
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(25)),
+                  color: Colors.transparent, borderRadius: BorderRadius.circular(25)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(40),
-                child: Image.asset(
-                  'assets/logo/men_image.jpg',
+                child: Image.network(
+                  'https://firebasestorage.googleapis.com/v0/b/everwatch-21292.appspot.com/o/uploads%2F2024-08-29%2017%3A49%3A13.985229?alt=media&token=2c369366-8d54-4fcb-b321-40cc55d41f05',
                   fit: BoxFit.cover,
                 ),
               )),
@@ -39,21 +46,21 @@ class CommentItemView extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'user name',
+                    itemValue!.username!.toString(),
                     style: TextStyle(
                         fontSize: 16,
                         color: Colors.red[400],
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    'Very nice',
+                    itemValue!.comment!.toString(),
                     style: TextStyle(
                         fontSize: 15,
                         color: Colors.white,
                         fontWeight: FontWeight.w400),
                   ),
                   Text(
-                    '2 days ago',
+                    timeago.format((itemValue!.datePublished as Timestamp).toDate()),
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.white,
@@ -65,14 +72,21 @@ class CommentItemView extends ConsumerWidget {
           ),
           Column(
             children: [
-              Icon(
-                Icons.favorite_border,
-                color: Colors.red[400],
-              ),
-              Text(
-                '0 Likes',
-                style: TextStyle(color: Colors.white),
+              InkWell(
+                onTap: (){
+                  ref.read(commentProvider.notifier).likeComment(postId:id,commentId:itemValue?.id);
+
+                },
+                child:Icon(
+                  itemValue?.likes?.contains(FirebaseAuth.instance.currentUser?.uid?.toString())!=true  ? Icons.favorite_border : Icons.favorite,
+                  color: Colors.red[400],
+                ) ,
               )
+              ,
+              Text(
+                itemValue!.likes!.length.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           )
         ],

@@ -19,11 +19,11 @@ class HomeScreen extends ConsumerWidget {
     final homeState = ref.watch(homeProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: [IconButton(onPressed: () async {
-        await FirebaseAuth.instance.signOut();
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-
-      }, icon: const Icon(Icons.logout))],),
+      // appBar: AppBar(actions: [IconButton(onPressed: () async {
+    //     await FirebaseAuth.instance.signOut();
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+    //
+    // }, icon: const Icon(Icons.logout))],),
       bottomNavigationBar:
       CommonBottomNavigationBar(onTap: (index) async {
         await ref.read(homeProvider.notifier).updatePages(index: index);

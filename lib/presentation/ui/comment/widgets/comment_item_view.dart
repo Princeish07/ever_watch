@@ -15,82 +15,87 @@ class CommentItemView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(10)),
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-              width: 50,
-              height: 50,
-              padding: EdgeInsets.all(1),
-              decoration: BoxDecoration(
-                  color: Colors.transparent, borderRadius: BorderRadius.circular(25)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(40),
-                child: Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/everwatch-21292.appspot.com/o/uploads%2F2024-08-29%2017%3A49%3A13.985229?alt=media&token=2c369366-8d54-4fcb-b321-40cc55d41f05',
-                  fit: BoxFit.cover,
+    return
+      Align(
+        alignment:itemValue?.uid!.toString()==FirebaseAuth.instance.currentUser?.uid!.toString() ? Alignment.centerRight : Alignment.centerLeft,
+
+        child: Container(
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius:itemValue?.uid!.toString()==FirebaseAuth.instance.currentUser?.uid!.toString() ? BorderRadius.only(topLeft: Radius.circular(15),bottomLeft: Radius.circular(15),bottomRight: Radius.circular(10)): BorderRadius.only(topRight: Radius.circular(15),bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15))),
+          // width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                  width: 50,
+                  height: 50,
+                  padding: EdgeInsets.all(1),
+                  decoration: BoxDecoration(
+                      color: Colors.transparent, borderRadius: BorderRadius.circular(25)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.asset(
+                      'assets/logo/men_image.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  )),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(5),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        itemValue!.username!.toString(),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.red[400],
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        itemValue!.comment!.toString(),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Text(
+                        timeago.format((itemValue!.datePublished as Timestamp).toDate()),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.all(5),
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              Column(
                 children: [
+                  InkWell(
+                    onTap: (){
+                      ref.read(commentProvider.notifier).likeComment(postId:id,commentId:itemValue?.id);
+
+                    },
+                    child:Icon(
+                      itemValue?.likes?.contains(FirebaseAuth.instance.currentUser?.uid?.toString())!=true  ? Icons.favorite_border : Icons.favorite,
+                      color: Colors.red[400],
+                    ) ,
+                  )
+                  ,
                   Text(
-                    itemValue!.username!.toString(),
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.red[400],
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    itemValue!.comment!.toString(),
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  Text(
-                    timeago.format((itemValue!.datePublished as Timestamp).toDate()),
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
+                    itemValue!.likes!.length.toString(),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ],
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              InkWell(
-                onTap: (){
-                  ref.read(commentProvider.notifier).likeComment(postId:id,commentId:itemValue?.id);
-
-                },
-                child:Icon(
-                  itemValue?.likes?.contains(FirebaseAuth.instance.currentUser?.uid?.toString())!=true  ? Icons.favorite_border : Icons.favorite,
-                  color: Colors.red[400],
-                ) ,
               )
-              ,
-              Text(
-                itemValue!.likes!.length.toString(),
-                style: TextStyle(color: Colors.white),
-              ),
             ],
-          )
-        ],
-      ),
-    );
+          ),
+        ),
+      );
   }
 }

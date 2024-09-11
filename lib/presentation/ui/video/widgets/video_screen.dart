@@ -12,6 +12,8 @@ import 'package:ever_watch/presentation/common_widgets/common_loader.dart';
 import 'package:ever_watch/core/other/general_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ever_watch/presentation/ui/comment/widgets/comment_screen.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:ever_watch/data/model/user_model.dart';
 
 class VideoScreen extends ConsumerStatefulWidget {
   const VideoScreen({super.key});
@@ -53,6 +55,7 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(videoProvider.notifier).getVideoList();
+
     });
   }
 
@@ -146,7 +149,7 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   ProfileWithFollow(
-                                      imageUrl: "assets/logo/men_image.jpg"),
+                                      imageUrl: "assets/logo/men_image.jpg",createdBy: itemValue?[index].uid,sentFollowRequestList: state.otherProfileDetails?.data?.sentRequests!,followingRequest:state.otherProfileDetails?.data?.following!,),
                                   IconWithBottomText(
                                     icon: Icon(
                                       Icons.favorite,
@@ -188,16 +191,21 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                                                   CommentScreen(id: itemValue?[index].id.toString(),)));
                                     },
                                   ),
-                                  IconWithBottomText(
-                                      icon: Icon(
-                                        Icons.reply,
-                                        color: Colors.white,
-                                        size: 30,
-                                      ),
-                                      value: itemValue?[index]
-                                              .shareCount
-                                              .toString() ??
-                                          "3"),
+                                  InkWell(
+                                    onTap: () async {
+                                      final result = await Share.share('${itemValue?[index].userName} has shared video ${itemValue?[index].videoUrl} with you');
+
+                                    },
+                                    child: IconWithBottomText(
+                                        icon: Icon(
+                                          Icons.reply,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                        value: itemValue?[index].shareCount
+                                            .toString() ??
+                                            "3"),
+                                  ),
                                   CircleAnimation(
                                     child: buildMusicAlbum('profile photo'),
                                   )

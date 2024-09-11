@@ -11,6 +11,7 @@ import 'package:ever_watch/core/other/resource.dart';
 import 'package:ever_watch/presentation/common_widgets/common_loader.dart';
 import 'package:ever_watch/presentation/ui/profile/widgets/profile_details.dart';
 import 'package:ever_watch/presentation/ui/profile/widgets/user_video_list.dart';
+import 'package:ever_watch/presentation/ui/follow_request/widgets/follow_request_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   String? uid;
@@ -39,7 +40,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: AppColors.mainBgColor,
         appBar: AppBar(
           centerTitle: true,
-          leading: Icon(Icons.person_add_alt_outlined),
+          leading: InkWell(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowRequestScreen()));
+            },
+            child: Icon(Icons.person_add_alt_outlined),
+          ),
           title: Text(
             state.userModel?.data?.name ?? "rivaanranwat", style: TextStyle(fontWeight: FontWeight.w500),),
           actions: [

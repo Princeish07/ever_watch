@@ -8,8 +8,9 @@ import 'package:ever_watch/core/other/resource.dart';
 class ProfileProvider extends StateNotifier<ProfileState>{
   ProfileRepository? repository;
 
-  ProfileProvider({this.repository}):super(ProfileState());
+  ProfileProvider({this.repository}):super(ProfileState(isLongPressed: false));
 
+  //Method to get video list of particular user
   getVideoList(){
     // state = state.copyWith(videoList: Resource.loading());
     repository?.getVideoListOfParticularUser(uid: FirebaseAuth.instance.currentUser!.uid?.toString())?.listen((list){
@@ -18,16 +19,25 @@ class ProfileProvider extends StateNotifier<ProfileState>{
 
   }
 
+  //Method to get user details
   getUserDetails(){
-    // state = state.copyWith(videoList: Resource.loading());
-
     repository?.getUserDetails(uid: FirebaseAuth.instance.currentUser!.uid?.toString())?.listen((userDetail){
       state = state.copyWith(userModel: userDetail);
     });
 
   }
+
+  //method to change isLongPressed state
+  setLongPressed({bool? isLongPressed}){
+    state = state.copyWith(isLongPressed: !isLongPressed!);
+  }
+
+  //method to delete to video
+  deleteVideo({String? videoId}){
+    repository?.deleteVideo(videoId: videoId!);
+  }
 }
 
-final profileProvider = StateNotifierProvider<ProfileProvider,ProfileState>((ref){
+final profileProvider = StateNotifierProvider.autoDispose<ProfileProvider,ProfileState>((ref){
   return ProfileProvider(repository: ProfileRepositoryImpl());
 });

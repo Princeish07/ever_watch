@@ -49,223 +49,225 @@ class RegisterScreen extends ConsumerWidget {
       }
     });
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(children: [
+      body: Stack(children: [
           Container(
             height: MediaQuery.of(context).size.height,
             padding: const EdgeInsets.all(40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppString.registerText,
-                  style: AppStyles()
-                      .mainHeadingStyle(AppColors().mainButtonColor!),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    // adding some properties
-                    showModalBottomSheet(
-                      context: context,
-                      // color is applied to main screen when modal bottom screen is displayed
-                      //background color for modal bottom screen
-                      backgroundColor: Colors.white,
-                      //elevates modal bottom screen
-                      elevation: 10,
-                      // gives rounded corner to modal bottom screen
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      builder: (BuildContext context) {
-                        // UDE : SizedBox instead of Container for whitespaces
-                        return Container(
-                          height: 200,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  if (await ref
-                                      .read(registerProvider.notifier)
-                                      .pickFromCamera()) {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.camera_alt),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Text(
-                                        "Take photo",
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  if (await ref
-                                      .read(registerProvider.notifier)
-                                      .pickFromGallery()) {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.image),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Text("Pick a image",
-                                          style: TextStyle(fontSize: 18)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.cancel),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Text("Cancel",
-                                          style: TextStyle(fontSize: 18)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Stack(
-                    children: [
-                      ClipOval(
-                        child: SizedBox.fromSize(
-                          size: Size.fromRadius(48), // Image radius
-                          child: registrationState.imageFile != null
-                              ? Image.file(
-                                  registrationState.imageFile!,
-                                  fit: BoxFit.fill,
-                                )
-                              : Image.asset(AppAssets.menImage),
-                        ),
-                      ),
-                      // CircleAvatar(
-                      //   radius: 48, // Image radius
-                      //   backgroundImage: registrationState.profilePicture != null
-                      //       ? NetworkImage(registrationState.profilePicture!,)  // Display uploaded image
-                      //       : AssetImage(AppAssets.menImage) as ImageProvider,  // Default image
-                      // ),
-                      Positioned(
-                        top: 1,
-                        right: 1,
-                        child: Icon(Icons.camera_alt),
-                      ),
-                    ],
+            child:
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppString.registerText,
+                    style: AppStyles()
+                        .mainHeadingStyle(AppColors().mainButtonColor!),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  hintText: AppString.enterName,
-                  textEditingController: nameCtrl,
-                  prefixIcon: const Icon(Icons.person),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  hintText: AppString.enterEmailHint,
-                  textEditingController: emailCtrl,
-                  prefixIcon: const Icon(Icons.email),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  hintText: AppString.enterPhone,
-                  textEditingController: phoneNumberCtrl,
-                  prefixIcon: const Icon(Icons.phone),
-                  isNumber: true,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  hintText: AppString.enterPassword,
-                  textEditingController: passwordCtrl,
-                  prefixIcon: const Icon(Icons.enhanced_encryption),
-                  isObsecureText: true,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  hintText: AppString.enterConfirmPassword,
-                  textEditingController: confirmPasswordCtrl,
-                  prefixIcon: const Icon(Icons.enhanced_encryption),
-                  isObsecureText: true,
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                MainButton(
-                  buttonText: AppString.registerText,
-                  onPressed: () async {
-                    print("email--->  " + emailCtrl!.text);
-                    print("password--->  " + passwordCtrl!.text);
-                    print("name--->  " + nameCtrl!.text);
-                    print("phone--->  " + phoneNumberCtrl!.text);
-                    print("confirmPassword--->  " + confirmPasswordCtrl!.text);
-
-                    await ref.read(registerProvider.notifier).registerNow(
-                        email: emailCtrl!.text,
-                        name: nameCtrl!.text,
-                        phone: phoneNumberCtrl!.text,
-                        password: passwordCtrl!.text,
-                        confirmPassword: confirmPasswordCtrl!.text);
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account? "),
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // adding some properties
+                      showModalBottomSheet(
+                        context: context,
+                        // color is applied to main screen when modal bottom screen is displayed
+                        //background color for modal bottom screen
+                        backgroundColor: Colors.white,
+                        //elevates modal bottom screen
+                        elevation: 10,
+                        // gives rounded corner to modal bottom screen
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        builder: (BuildContext context) {
+                          // UDE : SizedBox instead of Container for whitespaces
+                          return Container(
+                            height: 200,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (await ref
+                                        .read(registerProvider.notifier)
+                                        .pickFromCamera()) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.camera_alt),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Text(
+                                          "Take photo",
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (await ref
+                                        .read(registerProvider.notifier)
+                                        .pickFromGallery()) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.image),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Text("Pick a image",
+                                            style: TextStyle(fontSize: 18)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.cancel),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Text("Cancel",
+                                            style: TextStyle(fontSize: 18)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         },
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.w500),
-                        ))
-                  ],
-                )
-              ],
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        ClipOval(
+                          child: SizedBox.fromSize(
+                            size: Size.fromRadius(48), // Image radius
+                            child: registrationState.imageFile != null
+                                ? Image.file(
+                              registrationState.imageFile!,
+                              fit: BoxFit.fill,
+                            )
+                                : Image.asset(AppAssets.menImage),
+                          ),
+                        ),
+                        // CircleAvatar(
+                        //   radius: 48, // Image radius
+                        //   backgroundImage: registrationState.profilePicture != null
+                        //       ? NetworkImage(registrationState.profilePicture!,)  // Display uploaded image
+                        //       : AssetImage(AppAssets.menImage) as ImageProvider,  // Default image
+                        // ),
+                        Positioned(
+                          top: 1,
+                          right: 1,
+                          child: Icon(Icons.camera_alt),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextInputField(
+                    hintText: AppString.enterName,
+                    textEditingController: nameCtrl,
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextInputField(
+                    hintText: AppString.enterEmailHint,
+                    textEditingController: emailCtrl,
+                    prefixIcon: const Icon(Icons.email),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextInputField(
+                    hintText: AppString.enterPhone,
+                    textEditingController: phoneNumberCtrl,
+                    prefixIcon: const Icon(Icons.phone),
+                    isNumber: true,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextInputField(
+                    hintText: AppString.enterPassword,
+                    textEditingController: passwordCtrl,
+                    prefixIcon: const Icon(Icons.enhanced_encryption),
+                    isObsecureText: true,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextInputField(
+                    hintText: AppString.enterConfirmPassword,
+                    textEditingController: confirmPasswordCtrl,
+                    prefixIcon: const Icon(Icons.enhanced_encryption),
+                    isObsecureText: true,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  MainButton(
+                    buttonText: AppString.registerText,
+                    onPressed: () async {
+                      print("email--->  " + emailCtrl!.text);
+                      print("password--->  " + passwordCtrl!.text);
+                      print("name--->  " + nameCtrl!.text);
+                      print("phone--->  " + phoneNumberCtrl!.text);
+                      print("confirmPassword--->  " + confirmPasswordCtrl!.text);
+
+                      await ref.read(registerProvider.notifier).registerNow(
+                          email: emailCtrl!.text,
+                          name: nameCtrl!.text,
+                          phone: phoneNumberCtrl!.text,
+                          password: passwordCtrl!.text,
+                          confirmPassword: confirmPasswordCtrl!.text);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account? "),
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Login",
+                            style: TextStyle(
+                                color: Colors.black, fontWeight: FontWeight.w500),
+                          ))
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
           if (registrationState.isLoading == true) ...[
@@ -278,7 +280,6 @@ class RegisterScreen extends ConsumerWidget {
           //   )
           // ],
         ]),
-      ),
     );
   }
 }

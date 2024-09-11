@@ -37,4 +37,17 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return Stream.value(Resource.failure(error: e.toString()));
     }
   }
+
+
+  Future<Resource<bool>>? deleteVideo({String? videoId}) async{
+   try {
+     await FirebaseFirestore.instance.collection("videos").doc(videoId.toString()).delete();
+     return Resource.success(data: true);
+
+   } catch (e) {
+     print(e);
+     return Resource.failure(error: e.toString());
+   }
+
+  }
 }

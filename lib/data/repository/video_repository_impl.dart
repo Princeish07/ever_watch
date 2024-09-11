@@ -42,4 +42,31 @@ class VideoRepositoryImpl extends VideoRepository{
   }
   }
 
+
+  Future<Resource<bool>>? sendFollowRequest({String? otherUserId}) async{
+    try {
+      DocumentReference currentUserRef = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid?.toString());
+      DocumentReference targetUserRef = FirebaseFirestore.instance.collection('users').doc(otherUserId!);
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the target user's ID to the current user's 'sentRequests'
+      batch.update(currentUserRef, {
+            'sentRequests': FieldValue.arrayUnion([otherUserId])
+          });
+
+      // Add the current user's ID to the target user's 'receivedRequests'
+      batch.update(targetUserRef, {
+            'receivedRequests': FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid?.toString()])
+          });
+
+      await batch.commit();
+      return Resource.success(data: true);
+    } catch (e) {
+      print(e);
+      return Resource.failure(error: e.toString());
+    }
+  }
+
+
 }

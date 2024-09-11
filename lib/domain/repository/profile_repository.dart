@@ -8,5 +8,6 @@ abstract class ProfileRepository {
   Stream<Resource<List<VideoModel>>>? getVideoListOfParticularUser({String? uid});
 
   Stream<Resource<UserModel>>? getUserDetails({String? uid});
+  Future<Resource<bool>>? deleteVideo({String? videoId});
 
 }

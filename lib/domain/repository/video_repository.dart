@@ -5,4 +5,6 @@ abstract class VideoRepository{
   Stream<Resource<List<VideoModel>>>? getVideoListStream();
 
   Future<Resource<bool>> likeThePost({String? id});
+
+  Future<Resource<bool>>? sendFollowRequest({String? otherUserId});
 }

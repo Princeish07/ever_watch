@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:ever_watch/presentation/ui/video/provider/video_provider.dart';
-import 'package:share_plus/share_plus.dart';
-// class VideoPlayerItem extends StatefulWidget {
-//   const VideoPlayerItem({super.key});
+import 'package:ever_watch/presentation/ui/view_video/provider/view_video_provider.dart';
+
+// class ViewVideoPlayer extends StatefulWidget {
+//   const ViewVideoPlayer({super.key});
 //
 //   @override
-//   State<VideoPlayerItem> createState() => _VideoPlayerItemState();
+//   State<ViewVideoPlayer> createState() => _ViewVideoPlayerState();
 // }
 //
-// class _VideoPlayerItemState extends State<VideoPlayerItem> {
+// class _ViewVideoPlayerState extends State<ViewVideoPlayer> {
 //   @override
 //   Widget build(BuildContext context) {
 //     return const Placeholder();
@@ -19,16 +20,16 @@ import 'package:share_plus/share_plus.dart';
 // }
 
 
-class VideoPlayerItem extends ConsumerStatefulWidget {
+class ViewVideoPlayer extends ConsumerStatefulWidget {
   String? videoUrl;
   void Function()? onDoubleTap;
-   VideoPlayerItem({super.key,this.videoUrl,this.onDoubleTap});
+   ViewVideoPlayer({super.key,this.videoUrl,this.onDoubleTap});
 
   @override
-  ConsumerState<VideoPlayerItem> createState() => _VideoPlayerItemState();
+  ConsumerState<ViewVideoPlayer> createState() => _ViewVideoPlayerState();
 }
 
-class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with SingleTickerProviderStateMixin{
+class _ViewVideoPlayerState extends ConsumerState<ViewVideoPlayer>   with SingleTickerProviderStateMixin{
   late VideoPlayerController controller;
   bool _isHeartVisible = false;
 
@@ -52,7 +53,15 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with Single
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var state = ref.watch(videoProvider);
+    var state = ref.watch(viewVideoProvider);
+
+    ref.listen(viewVideoProvider, (prev,next){
+      controller = VideoPlayerController.network(next.videoDetailsResult!.data!.videoUrl!.toString())..initialize().then((value){
+        controller.play();
+        controller.setVolume(0);
+      });
+      controller.play();
+    });
 
     return Container(
       width: size.width,

@@ -10,7 +10,7 @@ import 'dart:core';
 class SearchRepositoryImpl extends SearchRepository{
   Stream<Resource<List<UserModel>>>? searchUserList({String? userName}) {
     try {
-    return  FirebaseFirestore.instance.collection("users").where('name',isGreaterThanOrEqualTo: userName).snapshots().map((snapshot){
+    return  FirebaseFirestore.instance.collection("users").where('name',isEqualTo: userName).where('docId',isNotEqualTo: FirebaseAuth.instance.currentUser?.uid).snapshots().map((snapshot){
       List<UserModel> userList = snapshot.docs.map((doc){
          return UserModel().fromMap(doc.data() as Map<String,dynamic>);
        }).toList();

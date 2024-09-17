@@ -49,8 +49,10 @@ class _ConfirmVideoScreenState extends ConsumerState<ConfirmVideoScreen> {
 
     var state = ref.watch(confirmProvider);
     ref.listen(confirmProvider, (previous, next) {
+      print("Progress-------> ${next.uploadProgress}");
       if(next.uploadVideoResult?.status==Status.SUCCESS){
         showToast("Video upload successfully");
+        controller.dispose();
         Navigator.pop(context);
 
       }else if(next.uploadVideoResult?.status==Status.FAILURE){
@@ -94,10 +96,31 @@ class _ConfirmVideoScreenState extends ConsumerState<ConfirmVideoScreen> {
             )
               ],
             ),
-
-            if(state.uploadVideoResult?.status==Status.LOADING) ...[
-              const CommonLoader()
+            if (state.uploadProgress! >= 0 && state.uploadProgress! < 100) ...[
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(state.uploadProgress.toString()),
+                      LinearProgressIndicator(
+                        value: state.uploadProgress! / 100,
+                        backgroundColor: Colors.red,
+                        color: Colors.blue,
+                        // valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ]
+
+            // if(state.uploadVideoResult?.status==Status.LOADING) ...[
+            //   const CommonLoader()
+            // ]
           ],
         ),
       ),

@@ -2,17 +2,19 @@ import 'package:ever_watch/data/model/video_model.dart';
 import 'package:ever_watch/core/other/resource.dart';
 import 'dart:core';
 import 'package:ever_watch/data/model/user_model.dart';
+import 'package:video_player/video_player.dart';
 
 
 class VideoState{
   Resource<List<VideoModel>>? videoListResult;
   Resource<UserModel>? otherProfileDetails;
+  List<VideoPlayerController>? videoControllerList;
   bool? isPlaying;
 
-  VideoState({this.videoListResult,this.isPlaying=true,this.otherProfileDetails});
+  VideoState({this.videoListResult,this.isPlaying=true,this.otherProfileDetails,this.videoControllerList});
 
-  VideoState copyWith({Resource<List<VideoModel>>? videoListResult,bool? isPlaying,Resource<UserModel>? otherProfileDetails})
+  VideoState copyWith({Resource<List<VideoModel>>? videoListResult,bool? isPlaying,Resource<UserModel>? otherProfileDetails,List<VideoPlayerController>? videoControllerList})
   {
-    return VideoState(videoListResult: videoListResult ?? this.videoListResult,isPlaying: isPlaying ?? this.isPlaying,otherProfileDetails: otherProfileDetails ?? this.otherProfileDetails);
+    return VideoState(videoListResult: videoListResult ?? this.videoListResult,isPlaying: isPlaying ?? this.isPlaying,otherProfileDetails: otherProfileDetails ?? this.otherProfileDetails,videoControllerList: videoControllerList ?? this.videoControllerList);
   }
 }

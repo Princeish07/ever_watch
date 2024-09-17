@@ -10,7 +10,7 @@ class ProfileState{
 
   ProfileState({this.videoList,this.userModel,this.likes,this.isLongPressed=false});
 
-  ProfileState copyWith({ Resource<List<VideoModel>>? videoList,Resource<UserModel>? userModel,bool? isLongPressed}){
+  ProfileState copyWith({ Resource<List<VideoModel>>? videoList,Resource<UserModel>? userModel,bool? isLongPressed,int? likes}){
     return ProfileState(videoList: videoList ?? this.videoList,userModel: userModel ?? this.userModel,likes: likes ?? this.likes,isLongPressed: isLongPressed ?? this.isLongPressed);
   }
 

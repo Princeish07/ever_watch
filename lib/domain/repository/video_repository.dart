@@ -7,4 +7,9 @@ abstract class VideoRepository{
   Future<Resource<bool>> likeThePost({String? id});
 
   Future<Resource<bool>>? sendFollowRequest({String? otherUserId});
+
+  Future<Resource<bool>>? unsendFollowRequest({String? otherUserId});
+
+  Future<Resource<bool>>? unFollowUser({String? otherUserId});
+
 }

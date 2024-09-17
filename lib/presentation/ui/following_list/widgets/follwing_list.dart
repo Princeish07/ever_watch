@@ -1,85 +1,73 @@
-import 'package:ever_watch/presentation/ui/profile/provider/profile_provider.dart';
+import 'package:ever_watch/presentation/ui/following_list/provider/following_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ever_watch/presentation/theme/app_colors.dart';
-import 'package:ever_watch/presentation/ui/search/provider/search_provider.dart';
-import 'package:ever_watch/core/other/resource.dart';
-import 'package:ever_watch/presentation/common_widgets/common_loader.dart';
-import 'package:ever_watch/core/other/general_utils.dart';
-import 'package:ever_watch/presentation/ui/profile/widgets/profile_screen.dart';
 
-class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+import '../../../../core/other/general_utils.dart';
+import '../../../../core/other/resource.dart';
+import '../../../common_widgets/common_loader.dart';
+import '../../../theme/app_colors.dart';
+import '../../profile/widgets/profile_screen.dart';
+
+class FollwingList extends ConsumerStatefulWidget {
+  bool? isFollowingList;
+   FollwingList({super.key,this.isFollowingList});
 
   @override
-  ConsumerState<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<FollwingList> createState() => _FollwingListState();
 }
 
-class _SearchScreenState extends ConsumerState<SearchScreen> {
+class _FollwingListState extends ConsumerState<FollwingList> {
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   ref.read(searchProvider.notifier).searchUser(userName: "");
-  // }
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(followingProvider.notifier).getFollowingList(
+          isFollowingList: widget.isFollowingList);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var state = ref.watch(searchProvider);
-    ref.listen(searchProvider, (prev, next) {
-      if (next.searchedUserResult?.status == Status.FAILURE) {
-        showToast(next.searchedUserResult!.error.toString());
+
+    var state = ref.watch(followingProvider);
+
+    ref.listen(followingProvider, (prev, next) {
+      if (next.followingList?.status == Status.FAILURE) {
+        showToast(next.followingList!.error.toString());
       }
-      if(next.errorMessage?.isNotEmpty==true) {
-        showToast(next.errorMessage.toString());
-      }
+
     });
 
     return Scaffold(
       backgroundColor: AppColors.mainBgColor,
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: TextFormField(
-          decoration: const InputDecoration(
-              filled: false,
-              hintText: "Search",
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              hintStyle: TextStyle(fontSize: 18, color: Colors.white),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white)),
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white))),
-          onFieldSubmitted: (value) {
-            ref.read(searchProvider.notifier).searchUser(userName: value);
-          },
-        ),
+        title: widget.isFollowingList==true ? Text("Following List",style: TextStyle(fontSize: 18, color: Colors.white),) : Text("Followers List",style: TextStyle(fontSize: 18, color: Colors.white),),
       ),
       body: Stack(
         children: [
-          if (state.searchedUserResult == null ||
-              (state.searchedUserResult?.data == null ||
-                      state.searchedUserResult?.data!.isEmpty == true) &&
-                  state.searchedUserResult?.status == Status.SUCCESS) ...[
+          if (state.followingList == null ||
+              (state.followingList?.data == null ||
+                  state.followingList?.data!.isEmpty == true) &&
+                  state.followingList?.status == Status.SUCCESS) ...[
             Center(
               child: Text(
-                "Search for users!",
+                "No user found",
                 style: TextStyle(
                     fontSize: 25,
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
               ),
             )
-          ] else if (state.searchedUserResult?.status == Status.SUCCESS) ...[
+          ] else if (state.followingList?.status == Status.SUCCESS) ...[
             Container(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                 child: ListView.builder(
-                    itemCount: state.searchedUserResult?.data!.length,
+                    itemCount: state.followingList?.data!.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
@@ -87,9 +75,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProfileScreen(
-                                        uid: state.searchedUserResult!
-                                            .data![index].uid,
-                                      )));
+                                    uid: state.followingList!
+                                        .data![index].uid,
+                                  )));
                         },
                         child: Container(
                           padding: EdgeInsets.all(20),
@@ -113,46 +101,46 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               ),
                               Expanded(
                                   child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    state.searchedUserResult!.data![index].name!
-                                        .toString(),
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  Text(
-                                    state
-                                        .searchedUserResult!.data![index].email!
-                                        .toString(),
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              )),
-                              if (state.searchedUserResult!.data![index]
-                                          .receivedRequests
-                                          ?.contains(FirebaseAuth
-                                              .instance.currentUser?.uid) !=
-                                      true &&
-                                  state.searchedUserResult!.data![index]
-                                          .followers
-                                          ?.contains(FirebaseAuth
-                                              .instance.currentUser?.uid) !=
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        state.followingList!.data![index].name!
+                                            .toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      Text(
+                                        state
+                                            .followingList!.data![index].email!
+                                            .toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  )),
+                              if (state.followingList!.data![index]
+                                  .receivedRequests
+                                  ?.contains(FirebaseAuth
+                                  .instance.currentUser?.uid) !=
+                                  true &&
+                                  state.followingList!.data![index]
+                                      .followers
+                                      ?.contains(FirebaseAuth
+                                      .instance.currentUser?.uid) !=
                                       true) ...[
                                 ElevatedButton(
                                   onPressed: () {
 
-                                    ref.read(searchProvider.notifier).sentFollowRequest(otherUserId: state.searchedUserResult!.data![index].uid);
+                                    // ref.read(followingProvider.notifier).sentFollowRequest(otherUserId: state.searchedUserResult!.data![index].uid);
                                   },
                                   style: ButtonStyle(
                                       padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
-                                              const EdgeInsets.all(10)),
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          const EdgeInsets.all(10)),
                                       backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.blue)),
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.blue)),
                                   child: const Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(
                                         "Follow",
@@ -168,26 +156,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     ],
                                   ),
                                 ),
-                              ] else if (state.searchedUserResult!.data![index]
-                                      .receivedRequests
-                                      ?.contains(FirebaseAuth
-                                          .instance.currentUser?.uid) ==
+                              ] else if (state.followingList!.data![index]
+                                  .receivedRequests
+                                  ?.contains(FirebaseAuth
+                                  .instance.currentUser?.uid) ==
                                   true) ...[
                                 ElevatedButton(
                                   onPressed: () {
-                                    ref.read(searchProvider.notifier).unsendFollowRequest(otherUserId: state.searchedUserResult!.data![index].uid);
+                                    // ref.read(searchProvider.notifier).unsendFollowRequest(otherUserId: state.searchedUserResult!.data![index].uid);
 
                                   },
                                   style: ButtonStyle(
                                       padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
-                                              const EdgeInsets.all(10)),
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          const EdgeInsets.all(10)),
                                       backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.grey)),
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.grey)),
                                   child: const Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(
                                         "Request Sent",
@@ -208,14 +196,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                   onPressed: () {},
                                   style: ButtonStyle(
                                       padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
-                                              const EdgeInsets.all(10)),
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          const EdgeInsets.all(10)),
                                       backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              AppColors().mainButtonColor!)),
+                                      MaterialStateProperty.all<Color>(
+                                          AppColors().mainButtonColor!)),
                                   child: const Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(
                                         "Message",
@@ -237,7 +225,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         ),
                       );
                     }))
-          ] else if (state.searchedUserResult?.status == Status.LOADING) ...[
+          ] else if (state.followingList?.status == Status.LOADING) ...[
             CommonLoader()
           ]
         ],

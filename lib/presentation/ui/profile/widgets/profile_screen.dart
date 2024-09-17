@@ -27,8 +27,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void  initState(){
     super.initState();
-    ref.read(profileProvider.notifier).getVideoList();
-    ref.read(profileProvider.notifier).getUserDetails();
+    ref.read(profileProvider.notifier).getVideoList(uid: widget.uid);
+    ref.read(profileProvider.notifier).getUserDetails(uid: widget.uid);
 
   }
 
@@ -40,15 +40,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: AppColors.mainBgColor,
         appBar: AppBar(
           centerTitle: true,
-          leading: InkWell(
+          leading: widget.uid==FirebaseAuth.instance.currentUser?.uid ? InkWell(
             onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowRequestScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>const FollowRequestScreen()));
             },
-            child: Icon(Icons.person_add_alt_outlined),
-          ),
+            child: state.userModel!=null ? state.userModel!.data!.receivedRequests!.isNotEmpty ? Stack(children: [const Positioned.fill(child: Icon(Icons.person_add_alt_outlined)),Positioned(top: 0,right: 0,child: Container(height: 15,width: 15,decoration: BoxDecoration(borderRadius: BorderRadius.circular(45),color: Colors.red),child:  Center(child: Text(state.userModel!.data!.receivedRequests!.length.toString(),style: TextStyle(color: Colors.white,fontSize: 10),)),),)],) : const Icon(Icons.person_add_alt_outlined) : SizedBox.shrink(),
+          ) : const SizedBox.shrink(),
           title: Text(
             state.userModel?.data?.name ?? "rivaanranwat", style: TextStyle(fontWeight: FontWeight.w500),),
-          actions: [
+          actions: const [
             Icon(Icons.more_horiz)
           ],
         ),
@@ -56,11 +56,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 15,),
-              ProfileDetails(),
-              SizedBox(height: 10,),
-              UserVideoList()
-
+              const SizedBox(height: 15,),
+              ProfileDetails(uid: widget.uid,),
+              const SizedBox(height: 10,),
+              const UserVideoList()
             ],
           ),
         )

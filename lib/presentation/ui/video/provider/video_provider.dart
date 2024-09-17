@@ -20,13 +20,39 @@ class VideoProvider extends StateNotifier<VideoState> {
   void getVideoList() {
     videoRepository
         ?.getVideoListStream()
-        ?.listen((Resource<List<VideoModel>> videoList) {
-      state = state.copyWith(videoListResult: videoList);
+        ?.listen((Resource<List<VideoModel>> videoList) async {
+      List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+      print("Video List ${videoList.data?.toSet().toString()}");
+      print("Video Controller ${videoController.toSet().toString()}");
+      print(" is Playing state ${state.isPlaying}");
+
+      state = state.copyWith(videoListResult: videoList,videoControllerList: videoController);
       getProfileDetails();
     });
 
     //  Resource<List<VideoModel>>? videoList= await videoRepository?.getVideoList();
     // state = state.copyWith(videoListResult: videoList!);
+  }
+
+  // Use compute to move initialization off the main thread
+  // Future<List<VideoPlayerController>> initializeVideoControllersBackground(List<VideoModel> videoList) async {
+  //   // Offload the initialization work to a background isolate using compute
+  //   List<VideoPlayerController> controllers = await compute(_initializeControllersInBackground, videoList);
+  //   return controllers;
+  // }
+
+  Future<List<VideoPlayerController>> initializeVideoControllers(List<VideoModel> videoList) async {
+    // Use Future.wait to wait for all video controllers to initialize
+    List<Future<VideoPlayerController>> controllerFutures = videoList.map((videoModel) async {
+      VideoPlayerController controller = VideoPlayerController.networkUrl(
+        Uri.parse(videoModel.videoUrl!),
+      );
+      await controller.initialize();
+      return controller;
+    }).toList();
+
+    // Wait for all controllers to complete initialization
+    return await Future.wait(controllerFutures);
   }
 
   playPauseVideo(VideoPlayerController controller) {
@@ -80,6 +106,11 @@ class VideoProvider extends StateNotifier<VideoState> {
       state = state.copyWith(otherProfileDetails:ref!);
     });
 
+  }
+
+  firstState(){
+
+    state = state.copyWith(isPlaying: true);
   }
 }
 

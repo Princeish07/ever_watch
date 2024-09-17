@@ -4,4 +4,9 @@ import 'package:ever_watch/core/other/resource.dart';
 
 abstract class FollowRequestRepository {
   Stream<Resource<List<UserModel>>>? getFollowRequestList({String? uid});
+
+  Future<Resource<bool>> rejectFollowRequest({required String followerUserId});
+
+  Future<Resource<bool>> acceptFollowRequest({ required String followerUserId});
+
 }

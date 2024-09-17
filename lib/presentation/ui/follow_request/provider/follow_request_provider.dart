@@ -10,9 +10,18 @@ class FollowRequestProvider extends StateNotifier<FollowRequestState> {
 
 
   fetchFollowRequestList(){
-    followRequestRepository?.getFollowRequestList(uid: FirebaseAuth.instance?.currentUser?.uid!.toString())?.listen((userModel){
+    followRequestRepository?.getFollowRequestList(uid: FirebaseAuth.instance.currentUser?.uid.toString())?.listen((userModel){
       state = state.copyWith(followRequestList: userModel);
     });
+  }
+
+  acceptFollowRequest({String? followersId}){
+    followRequestRepository?.acceptFollowRequest(followerUserId: followersId!);
+  }
+
+
+  rejectFollowRequest({String? followersId}){
+    followRequestRepository?.rejectFollowRequest(followerUserId: followersId!);
   }
 
 

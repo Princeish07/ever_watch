@@ -1,3 +1,4 @@
+import 'package:ever_watch/presentation/ui/profile/widgets/profile_screen.dart';
 import 'package:ever_watch/presentation/ui/video/widgets/video_player_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,31 +64,41 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var state = ref.watch(videoProvider);
-    ref.listen(videoProvider, (prev, next) {
+    ref.listen(
+        videoProvider, (prev, next) {
       if (next.videoListResult?.status == Status.FAILURE) {
         showToast(next.videoListResult!.error.toString());
       } else if (next.videoListResult?.status == Status.SUCCESS) {
         // showToast("Video fetched Successfully");
       }
-    });
+    }
+    );
     return Scaffold(
         body: Stack(
       children: [
-        PageView.builder(
+        if (state.videoListResult?.status == Status.SUCCESS) ...[
+          PageView.builder(
             itemCount: state.videoListResult?.data?.length ?? 1,
             controller: PageController(initialPage: 0, viewportFraction: 1),
             scrollDirection: Axis.vertical,
+            onPageChanged: (value){
+            },
             itemBuilder: (context, index) {
               var itemValue = state.videoListResult?.data;
+              // if(state.videoControllerList![index].initialize()==false){
+              //   state.videoControllerList![index].initialize();
+              // }
               return Stack(
                 children: [
                   VideoPlayerItem(
+                    controller: state.videoControllerList![index],
+
                       videoUrl: itemValue?[index].videoUrl ?? "",
                       onDoubleTap: () {
                         ref
                             .read(videoProvider.notifier)
                             ?.likingVideo(id: itemValue?[index].id);
-                      }),
+                      },videoModel: itemValue?[index],),
                   Column(
                     // mainAxisSize: MainAxisSize.max,
                     // crossAxisAlignment: CrossAxisAlignment.end,
@@ -148,8 +159,13 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  ProfileWithFollow(
-                                      imageUrl: "assets/logo/men_image.jpg",createdBy: itemValue?[index].uid,sentFollowRequestList: state.otherProfileDetails?.data?.sentRequests!,followingRequest:state.otherProfileDetails?.data?.following!,),
+                                  InkWell(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(uid: itemValue?[index].uid,)));
+                                    },
+                                    child: ProfileWithFollow(
+                                        imageUrl: "assets/logo/men_image.jpg",createdBy: itemValue?[index].uid,sentFollowRequestList: state.otherProfileDetails?.data?.sentRequests!,followingRequest:state.otherProfileDetails?.data?.following!,),
+                                  ),
                                   IconWithBottomText(
                                     icon: Icon(
                                       Icons.favorite,
@@ -220,7 +236,8 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                 ],
               );
             }),
-        if (state.videoListResult?.status == Status.LOADING) ...[CommonLoader()]
+        ]
+        else if (state.videoListResult?.status == Status.LOADING) ...[CommonLoader()]
       ],
     ));
   }

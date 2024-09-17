@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 class VideoModel {
   String? userName;
   String? uid;
@@ -10,6 +12,7 @@ class VideoModel {
   String? videoUrl;
   String? thumbnails;
   String? profilePhoto;
+  // VideoPlayerController? controller;
 
   VideoModel({this.userName,
     this.uid,
@@ -21,7 +24,9 @@ class VideoModel {
     this.caption,
     this.videoUrl,
     this.thumbnails,
-    this.profilePhoto});
+    this.profilePhoto,
+    // this.controller
+  });
 
   Map<String, dynamic> toJson() =>
       {
@@ -38,7 +43,7 @@ class VideoModel {
         "profile_picture": profilePhoto
       };
 
-  VideoModel fromJson(Map<String, dynamic> map) {
+  VideoModel fromJson(Map<String, dynamic> map)  {
     return VideoModel(userName: map['username'],
         uid: map["uid"],
         id: map['id'],
@@ -49,7 +54,9 @@ class VideoModel {
         caption: map['caption'],
         videoUrl: map['video_url'],
         thumbnails: map['thumbnails'],
-        profilePhoto: map['profile_picture']
+        profilePhoto: map['profile_picture'],
+      // controller: await VideoPlayerController.networkUrl(Uri.parse(map['video_url']))..initialize()
+
     );
   }
 }

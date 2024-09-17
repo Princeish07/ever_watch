@@ -1,3 +1,4 @@
+import 'package:ever_watch/data/model/video_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,33 +22,97 @@ import 'package:share_plus/share_plus.dart';
 
 class VideoPlayerItem extends ConsumerStatefulWidget {
   String? videoUrl;
+  VideoModel? videoModel;
+  VideoPlayerController? controller;
   void Function()? onDoubleTap;
-   VideoPlayerItem({super.key,this.videoUrl,this.onDoubleTap});
+   VideoPlayerItem({super.key,this.videoUrl,this.onDoubleTap,this.videoModel,this.controller});
 
   @override
   ConsumerState<VideoPlayerItem> createState() => _VideoPlayerItemState();
 }
 
-class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with SingleTickerProviderStateMixin{
-  late VideoPlayerController controller;
+class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>  with SingleTickerProviderStateMixin , WidgetsBindingObserver {
+  // late VideoPlayerController controller;
   bool _isHeartVisible = false;
 
   @override
   void initState() {
     super.initState();
-    controller = VideoPlayerController.network(widget.videoUrl!)..initialize().then((value){
-      controller.play();
-      controller.setVolume(0);
+    // print("BeforeVideoLoad ${DateTime.now().second}");
+    //
+    //   controller = VideoPlayerController.networkUrl(
+    //     Uri.parse(
+    //       widget.videoUrl.toString(),
+    //     ),
+    //     // invalidateCacheIfOlderThan: const Duration(days: 69),
+    //   )..initialize().then((value) async {
+    //     controller.play();
+    //     setState(() {});
+    //   });
+    // }
+
+    // controller = widget.videoModel!.controller!;
+    // controller.play();
+    // controller.setVolume(0);
+
+    widget.controller?.setLooping(true);
+    widget.controller?.play();
+    WidgetsBinding.instance.addObserver(this); // Start observing lifecycle events
+
+    // widget.controller
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref.read(videoProvider.notifier).firstState();
     });
-    controller.play();
-    
+
+
+
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.dispose();
+    // widget.controller?.dispose();
+    WidgetsBinding.instance.removeObserver(this); // Start observing lifecycle events
+
+    widget.controller?.pause();
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   ref.read(videoProvider.notifier).playPauseVideo(widget.controller!);
+    // });
+
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Handle app lifecycle changes
+    if (state == AppLifecycleState.paused) {
+      // Pause the video when the app is backgrounded
+      widget.controller?.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      // Resume the video when the app returns to the foreground
+      if (!widget.controller!.value.isPlaying) {
+        widget.controller?.play();
+      }
+    }
+  }
+
+    // Method to show heart animation
+    void _showHeartAnimation() {
+      setState(() {
+        _isHeartVisible = true;
+      });
+
+
+
+      // Hide the heart animation after a short duration
+      Future.delayed(Duration(milliseconds: 2000), () {
+        setState(() {
+          _isHeartVisible = false;
+        });
+
+      });
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +127,11 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with Single
       ),
       child: Stack(
         children: [
+          if(widget.videoUrl!="")...[
 
 
-          VideoPlayer(controller),
+        VideoPlayer(widget.controller!),
+
     //     , GestureDetector(onTap:(){
     //   ref.read(videoProvider.notifier).playPauseVideo(controller);
     // },child: Container(color: Colors.transparent,width: MediaQuery.of(context).size.width,
@@ -76,7 +143,7 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with Single
               widget.onDoubleTap!();
             },
             onTap: (){
-              ref.read(videoProvider.notifier).playPauseVideo(controller);
+              ref.read(videoProvider.notifier).playPauseVideo(widget.controller!);
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -102,23 +169,9 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>   with Single
             ),
           ),
         ],
+    ]
       )
     );
   }
 
-  // Method to show heart animation
-  void _showHeartAnimation() {
-    setState(() {
-      _isHeartVisible = true;
-    });
-
-
-    // Hide the heart animation after a short duration
-    Future.delayed(Duration(milliseconds: 2000), () {
-      setState(() {
-        _isHeartVisible = false;
-      });
-
-    });
-  }
 }

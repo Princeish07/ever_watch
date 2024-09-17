@@ -10,6 +10,7 @@ import 'dart:async';
 class VideoRepositoryImpl extends VideoRepository{
 
   Stream<Resource<List<VideoModel>>>? getVideoListStream() {
+
     try {
       return FirebaseFirestore.instance.collection("videos").snapshots().map((snapshot) {
         List<VideoModel> videoList = snapshot.docs.map((doc) {
@@ -67,6 +68,59 @@ class VideoRepositoryImpl extends VideoRepository{
       return Resource.failure(error: e.toString());
     }
   }
+
+  @override
+  Future<Resource<bool>>? unsendFollowRequest({String? otherUserId}) async{
+    try {
+      DocumentReference currentUserRef = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid?.toString());
+      DocumentReference targetUserRef = FirebaseFirestore.instance.collection('users').doc(otherUserId!);
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the target user's ID to the current user's 'sentRequests'
+      batch.update(currentUserRef, {
+        'sentRequests': FieldValue.arrayRemove([otherUserId])
+      });
+
+      // Add the current user's ID to the target user's 'receivedRequests'
+      batch.update(targetUserRef, {
+        'receivedRequests': FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid.toString()])
+      });
+
+      await batch.commit();
+      return Resource.success(data: true);
+    } catch (e) {
+      print(e);
+      return Resource.failure(error: e.toString());
+    }
+  }
+
+  @override
+  Future<Resource<bool>>? unFollowUser({String? otherUserId}) async{
+    try {
+      DocumentReference currentUserRef = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid?.toString());
+      DocumentReference targetUserRef = FirebaseFirestore.instance.collection('users').doc(otherUserId!);
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the target user's ID to the current user's 'sentRequests'
+      batch.update(currentUserRef, {
+        'following': FieldValue.arrayRemove([otherUserId])
+      });
+
+      // Add the current user's ID to the target user's 'receivedRequests'
+      batch.update(targetUserRef, {
+        'followers': FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid?.toString()])
+      });
+
+      await batch.commit();
+      return Resource.success(data: true);
+    } catch (e) {
+      print(e);
+      return Resource.failure(error: e.toString());
+    }
+  }
+
 
 
 }

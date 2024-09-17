@@ -34,8 +34,28 @@ class ConfirmVideoProvider extends StateNotifier<ConfirmVideoState>{
 
     }else {
       state = state.copyWith(uploadVideoResult: Resource.loading());
+
+      // Initialize a progress tracker
+      double totalProgress = 0.0;
+      int tasksCount = 2; // Number of tasks (video and thumbnail uploads)
+
+      // Function to update progress
+      double videoProgress = 0.0;
+      double thumbnailProgress = 0.0;
+
+      void updateProgress(double progress, String taskType) {
+        if (taskType == "video") {
+          videoProgress = progress;
+        } else if (taskType == "thumbnail") {
+          thumbnailProgress = progress;
+        }
+        double totalProgress = (videoProgress + thumbnailProgress) / 2;
+        state = state.copyWith(uploadProgress: totalProgress);
+      }
+
     var result =   await uploadVideoRepository?.uploadVideo(
-          songName: songName, caption: caption, videoPath: videoPath);
+          songName: songName, caption: caption, videoPath: videoPath,        onProgress: updateProgress
+    );
 
     state = state.copyWith(uploadVideoResult: result);
     }

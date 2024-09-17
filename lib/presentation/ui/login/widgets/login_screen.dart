@@ -25,7 +25,7 @@ class LoginScreen extends ConsumerWidget {
     final loginState = ref.watch(loginProvider);
     ref.listen(loginProvider, (previous, next) {
       if(next.isAuthenticated==true){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
       }else{
         if(loginState.errorMessage==null || next.errorMessage?.isNotEmpty==true){
           showToast(next.errorMessage ?? "");

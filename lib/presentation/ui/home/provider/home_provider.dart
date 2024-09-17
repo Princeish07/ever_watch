@@ -1,5 +1,6 @@
 import 'package:ever_watch/presentation/ui/add_video/widgets/add_video_screen.dart';
 import 'package:ever_watch/presentation/ui/video/widgets/video_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ class HomeProvider extends StateNotifier<HomeState>{
     SearchScreen(),
     AddVideoScreen(),
     Text("Messages",style: TextStyle(color: Colors.black),),
-    ProfileScreen(),
+    ProfileScreen(uid: FirebaseAuth.instance.currentUser?.uid,),
 
   ];
 

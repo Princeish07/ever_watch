@@ -10,11 +10,14 @@ class VideoState{
   Resource<UserModel>? otherProfileDetails;
   List<VideoPlayerController>? videoControllerList;
   bool? isPlaying;
+  final bool hasMore;
 
-  VideoState({this.videoListResult,this.isPlaying=true,this.otherProfileDetails,this.videoControllerList});
+  VideoState({this.videoListResult,this.isPlaying=true,this.otherProfileDetails,this.videoControllerList,required this.hasMore});
 
-  VideoState copyWith({Resource<List<VideoModel>>? videoListResult,bool? isPlaying,Resource<UserModel>? otherProfileDetails,List<VideoPlayerController>? videoControllerList})
+  VideoState copyWith({Resource<List<VideoModel>>? videoListResult,bool? isPlaying,Resource<UserModel>? otherProfileDetails,List<VideoPlayerController>? videoControllerList,bool? hasMore,
+  })
   {
-    return VideoState(videoListResult: videoListResult ?? this.videoListResult,isPlaying: isPlaying ?? this.isPlaying,otherProfileDetails: otherProfileDetails ?? this.otherProfileDetails,videoControllerList: videoControllerList ?? this.videoControllerList);
+    return VideoState(videoListResult: videoListResult ?? this.videoListResult,isPlaying: isPlaying ?? this.isPlaying,otherProfileDetails: otherProfileDetails ?? this.otherProfileDetails,videoControllerList: videoControllerList ?? this.videoControllerList,      hasMore: hasMore ?? this.hasMore,
+    );
   }
 }

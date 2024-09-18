@@ -24,6 +24,8 @@ class VideoScreen extends ConsumerStatefulWidget {
 }
 
 class _VideoScreenState extends ConsumerState<VideoScreen> {
+  late final ScrollController _scrollController;
+
   buildMusicAlbum(String profilePhoto) {
     return SizedBox(
       height: 60,
@@ -54,10 +56,18 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(videoProvider.notifier).getVideoList();
 
     });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      ref.read(videoProvider.notifier).fetchMoreVideos();
+    }
   }
 
   @override
@@ -78,10 +88,15 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
       children: [
         if (state.videoListResult?.status == Status.SUCCESS) ...[
           PageView.builder(
+
             itemCount: state.videoListResult?.data?.length ?? 1,
             controller: PageController(initialPage: 0, viewportFraction: 1),
             scrollDirection: Axis.vertical,
             onPageChanged: (value){
+              if(value+2==state.videoListResult?.data?.length){
+                ref.read(videoProvider.notifier).fetchMoreVideos();
+
+              }
             },
             itemBuilder: (context, index) {
               var itemValue = state.videoListResult?.data;
@@ -235,7 +250,7 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                   ),
                 ],
               );
-            }),
+            },),
         ]
         else if (state.videoListResult?.status == Status.LOADING) ...[CommonLoader()]
       ],

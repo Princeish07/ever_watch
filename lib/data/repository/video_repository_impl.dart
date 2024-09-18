@@ -7,9 +7,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:core';
 import 'dart:async';
 
+import '../../core/pagination_manager/pagination_manager.dart';
+
 class VideoRepositoryImpl extends VideoRepository{
 
   Stream<Resource<List<VideoModel>>>? getVideoListStream() {
+    final PaginationManager<VideoModel> _paginationManager;
+    _paginationManager = PaginationManager<VideoModel>(
+      'videos',
+      VideoModel().fromJson,
+      5, // Page size
+    );
+
+    return _paginationManager.getPaginatedStream();
 
     try {
       return FirebaseFirestore.instance.collection("videos").snapshots().map((snapshot) {

@@ -15,31 +15,55 @@ class VideoProvider extends StateNotifier<VideoState> {
   ProfileRepository? profileRepository;
 
   VideoProvider({this.videoRepository,this.profileRepository})
-      : super(VideoState(videoListResult: Resource.loading(), isPlaying: true));
+      : super(VideoState(videoListResult: Resource.loading(), isPlaying: true,hasMore: true));
 
-  void getVideoList() {
-    videoRepository
-        ?.getVideoListStream()
-        ?.listen((Resource<List<VideoModel>> videoList) async {
-      List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
-      print("Video List ${videoList.data?.toSet().toString()}");
-      print("Video Controller ${videoController.toSet().toString()}");
-      print(" is Playing state ${state.isPlaying}");
+  // void getVideoList() {
+  //   videoRepository
+  //       ?.getVideoListStream()
+  //       ?.listen((Resource<List<VideoModel>> videoList) async {
+  //     List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+  //     print("Video List ${videoList.data?.toSet().toString()}");
+  //     print("Video Controller ${videoController.toSet().toString()}");
+  //     print(" is Playing state ${state.isPlaying}");
+  //
+  //     state = state.copyWith(videoListResult: videoList,videoControllerList: videoController);
+  //     getProfileDetails();
+  //   });
+  //
+  //   //  Resource<List<VideoModel>>? videoList= await videoRepository?.getVideoList();
+  //   // state = state.copyWith(videoListResult: videoList!);
+  // }
 
-      state = state.copyWith(videoListResult: videoList,videoControllerList: videoController);
-      getProfileDetails();
+  void getVideoList() async {
+    final stream = videoRepository?.getVideoListStream();
+    stream?.listen((videoList) async {
+          List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+
+      state = state.copyWith(
+        videoListResult: videoList,
+        hasMore: state.hasMore,
+        videoControllerList: videoController
+      );
     });
-
-    //  Resource<List<VideoModel>>? videoList= await videoRepository?.getVideoList();
-    // state = state.copyWith(videoListResult: videoList!);
   }
 
-  // Use compute to move initialization off the main thread
-  // Future<List<VideoPlayerController>> initializeVideoControllersBackground(List<VideoModel> videoList) async {
-  //   // Offload the initialization work to a background isolate using compute
-  //   List<VideoPlayerController> controllers = await compute(_initializeControllersInBackground, videoList);
-  //   return controllers;
-  // }
+  void fetchMoreVideos() {
+    if (state.hasMore) {
+      final stream = videoRepository?.getVideoListStream();
+      stream?.listen((videoList) async {
+        List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+
+        state = state.copyWith(
+          videoListResult: videoList,
+          hasMore: state.hasMore,
+            videoControllerList: videoController
+
+        );
+      });
+    }
+  }
+
+
 
   Future<List<VideoPlayerController>> initializeVideoControllers(List<VideoModel> videoList) async {
     // Use Future.wait to wait for all video controllers to initialize

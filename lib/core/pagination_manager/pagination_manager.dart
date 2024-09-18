@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ever_watch/core/other/resource.dart';
 
 class PaginationManager<T> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class PaginationManager<T> {
       this._pageSize,
       );
 
-  Stream<List<T>> getPaginatedStream() {
+  Stream<Resource<List<T>>> getPaginatedStream() {
     Query query = _firestore.collection(_collectionPath)
         // .orderBy('timestamp') // Adjust sorting according to your needs
         .limit(_pageSize);
@@ -36,7 +37,7 @@ class PaginationManager<T> {
         return _fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
 
-      return items;
+      return Resource.success(data: items);
     });
   }
 

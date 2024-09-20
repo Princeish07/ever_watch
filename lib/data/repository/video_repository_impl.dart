@@ -11,28 +11,21 @@ import '../../core/pagination_manager/pagination_manager.dart';
 
 class VideoRepositoryImpl extends VideoRepository{
 
-  Stream<Resource<List<VideoModel>>>? getVideoListStream() {
-    final PaginationManager<VideoModel> _paginationManager;
-    _paginationManager = PaginationManager<VideoModel>(
-      'videos',
-      VideoModel().fromJson,
-      5, // Page size
-    );
+  final PaginationManager<VideoModel> _paginationManager;
 
-    return _paginationManager.getPaginatedStream();
+  // Initialize PaginationManager in the constructor
+  VideoRepositoryImpl() : _paginationManager = PaginationManager<VideoModel>(
+    'videos',
+        (json) => VideoModel().fromJson(json),
+    5,  // Page size
+  );
 
-    try {
-      return FirebaseFirestore.instance.collection("videos").snapshots().map((snapshot) {
-        List<VideoModel> videoList = snapshot.docs.map((doc) {
-          return VideoModel().fromJson(doc.data() as Map<String, dynamic>);
-        }).toList();
-
-        return Resource.success(data: videoList);
-      });
-    } catch (e) {
-      return Stream.value(Resource.failure(error: e.toString()));
-    }
+  @override
+  Future<Resource<List<VideoModel>>>? getVideoList() {
+    return _paginationManager.fetchPaginatedData();
   }
+
+
 
   Future<Resource<bool>> likeThePost({String? id}) async
   {
@@ -131,6 +124,17 @@ class VideoRepositoryImpl extends VideoRepository{
     }
   }
 
+  @override
+  Resource<bool>? resetPagination()  {
+    try {
+      _paginationManager.reset();
+      return Resource.success(data: true);
+    } catch (e) {
+      print(e);
+      return Resource.failure(error: e.toString());
+    }
+
+  }
 
 
 }

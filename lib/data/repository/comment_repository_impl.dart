@@ -24,32 +24,51 @@ class CommentRepositoryImpl extends CommentRepository {
 
   Future<Resource<bool>> sendComment({String? comment, String? postId}) async {
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection(
-          "users").doc(FirebaseAuth.instance.currentUser?.uid.toString()).get();
-      var allDocs = await FirebaseFirestore.instance.collection("videos").doc(
-          postId).collection("comments").get();
+      // Get user data for the current user
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+          .get();
+
+      // Get current comment count for the video post
+      DocumentReference videoDocRef = FirebaseFirestore.instance
+          .collection("videos")
+          .doc(postId);
+
+      DocumentSnapshot videoDoc = await videoDocRef.get();
+      int currentCommentCount = (videoDoc.data() as Map<String, dynamic>)['comment_count'];
+
+      // Get the length of current comments to generate a unique comment ID
+      var allDocs = await videoDocRef.collection("comments").get();
       int len = allDocs.docs.length;
-      // return
+
+      // Create the comment model
       CommentModel commentModel = CommentModel(
-          username: (userDoc.data() as Map<String, dynamic>)['name'],
-          comment: comment,
-          datePublished: DateTime.now(),
-          likes: [],
-          profilePhoto: (userDoc.data() as Map<String,
-              dynamic>)['profile_picture'],
-          uid: FirebaseAuth.instance.currentUser?.uid.toString(),
-          id: 'Comment $len');
+        username: (userDoc.data() as Map<String, dynamic>)['name'],
+        comment: comment,
+        datePublished: DateTime.now(),
+        likes: [],
+        profilePhoto: (userDoc.data() as Map<String, dynamic>)['profile_picture'],
+        uid: FirebaseAuth.instance.currentUser?.uid.toString(),
+        id: 'Comment $len',
+      );
 
-      await FirebaseFirestore.instance.collection('videos').doc(postId)
-          .collection('comments').doc('Comment $len')
-          .set(commentModel.toJson());
+      // Start a Firestore batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
 
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection(
-          "videos").doc(postId).get();
-      await FirebaseFirestore.instance.collection("videos").doc(postId).update({
-        'comment_count': (doc.data() as Map<String, dynamic>)['comment_count'] +
-            1
-      });
+      // Create a reference for the comment document
+      DocumentReference commentDocRef = videoDocRef
+          .collection('comments')
+          .doc('Comment $len');
+
+      // Add the comment to the comments sub-collection
+      batch.set(commentDocRef, commentModel.toJson());
+
+      // Update the comment count in the 'videos' collection
+      batch.update(videoDocRef, {'comment_count': currentCommentCount + 1});
+
+      // Commit the batch operation
+      await batch.commit();
 
       return Resource.success(data: true);
     } catch (e) {

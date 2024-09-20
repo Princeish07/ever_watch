@@ -72,8 +72,9 @@ class _VideoPlayerItemState extends ConsumerState<VideoPlayerItem>  with SingleT
   void dispose() {
     super.dispose();
     // widget.controller?.dispose();
-    WidgetsBinding.instance.removeObserver(this); // Start observing lifecycle events
-
+    WidgetsBinding.instance.removeObserver(this);
+    // Start observing lifecycle events
+widget.controller?.seekTo(Duration.zero);
     widget.controller?.pause();
 
     // WidgetsBinding.instance.addPostFrameCallback((_) async {

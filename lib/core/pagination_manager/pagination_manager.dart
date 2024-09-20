@@ -16,16 +16,18 @@ class PaginationManager<T> {
       this._pageSize,
       );
 
-  Stream<Resource<List<T>>> getPaginatedStream() {
-    Query query = _firestore.collection(_collectionPath)
-        // .orderBy('timestamp') // Adjust sorting according to your needs
-        .limit(_pageSize);
+  Future<Resource<List<T>>>? fetchPaginatedData() async {
+    try {
+      Query query = _firestore.collection(_collectionPath)
+      // .orderBy('timestamp') // Adjust sorting according to your needs
+          .limit(_pageSize);
 
-    if (_lastDocument != null) {
-      query = query.startAfterDocument(_lastDocument!);
-    }
+      if (_lastDocument != null) {
+        query = query.startAfterDocument(_lastDocument!);
+      }
 
-    return query.snapshots().map((snapshot) {
+      QuerySnapshot snapshot = await query.get();
+
       if (snapshot.docs.isNotEmpty) {
         _lastDocument = snapshot.docs.last;
         _hasMore = snapshot.docs.length == _pageSize;
@@ -38,7 +40,9 @@ class PaginationManager<T> {
       }).toList();
 
       return Resource.success(data: items);
-    });
+    } catch (error) {
+      return Resource.failure(error: error.toString());
+    }
   }
 
   bool get hasMore => _hasMore;

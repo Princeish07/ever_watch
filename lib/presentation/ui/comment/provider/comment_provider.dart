@@ -1,3 +1,4 @@
+import 'package:ever_watch/presentation/ui/video/provider/video_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ever_watch/core/other/resource.dart';
@@ -11,8 +12,11 @@ class CommentProvider extends StateNotifier<CommentState>{
 
   CommentProvider({this.commentRepository}):super(CommentState());
 
-  sendComment({String? id,String? comment}) async{
-   var result =  await  commentRepository?.sendComment(comment:comment,postId: id);
+  sendComment({String? id,String? comment,WidgetRef? ref}) async{
+    ref?.read(videoProvider.notifier).incrementCommentCountOptimistically(id.toString());
+    state = state.copyWith(commentList: Resource.loading());
+
+    var result =  await  commentRepository?.sendComment(comment:comment,postId: id);
    state = state.copyWith(commentAddedResult: result);
   }
 

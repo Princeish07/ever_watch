@@ -1,3 +1,4 @@
+
 import 'package:ever_watch/presentation/ui/video/state/video_state.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ever_watch/domain/repository/video_repository.dart';
@@ -35,33 +36,99 @@ class VideoProvider extends StateNotifier<VideoState> {
   // }
 
   void getVideoList() async {
-    final stream = videoRepository?.getVideoListStream();
-    stream?.listen((videoList) async {
-          List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+    print("getVideoList method called ${state.hasMore}");
+    if(state.videoListResult?.data?.isEmpty==null ||state.videoListResult?.data?.isEmpty==true || state.hasMore) {
+      print("Hit");
+      final videoList = await videoRepository?.getVideoList();
 
-      state = state.copyWith(
-        videoListResult: videoList,
-        hasMore: state.hasMore,
-        videoControllerList: videoController
-      );
-    });
-  }
+        print("getVideoList method video length ${videoList?.data?.length}");
+        if(videoList?.data?.length==0){
+          state = state.copyWith(hasMore: false);
+        }
+        else if(state.videoListResult?.data==null){
+          List<
+              VideoPlayerController> videoController = await initializeVideoControllers(
+              videoList!.data!);
+          state = state.copyWith(
+              videoListResult: videoList,
+              hasMore: true,
+              videoControllerList: videoController
 
-  void fetchMoreVideos() {
-    if (state.hasMore) {
-      final stream = videoRepository?.getVideoListStream();
-      stream?.listen((videoList) async {
-        List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+          );
+        }
+        else  {
+          List<
+              VideoPlayerController> videoController = await initializeVideoControllers(
+              videoList!.data!);
 
-        state = state.copyWith(
-          videoListResult: videoList,
-          hasMore: state.hasMore,
-            videoControllerList: videoController
+          state = state.copyWith(
+              videoListResult: Resource.success(
+                  data: mergeAndUpdateVideos(
+                    currentList: state.videoListResult?.data,
+                    newList: videoList.data,
+                  )
+              ),
+              hasMore: true,
+              videoControllerList: [
+                ...state.videoControllerList!,
+                ...videoController
+              ]
 
-        );
-      });
+          );
+        }
+
+      // });
     }
   }
+
+
+
+  List<VideoModel> mergeAndUpdateVideos({
+    required List<VideoModel>? currentList,
+    required List<VideoModel>? newList,
+  }) {
+    Map<String, VideoModel> videoMap = {
+      for (VideoModel video in currentList ?? []) video.id!: video
+    };
+
+    // Iterate over the new list and update/add videos
+    for (VideoModel newVideo in newList ?? []) {
+      videoMap[newVideo.id!] = newVideo; // This will either update or add the new video
+    }
+
+    // Return the updated list
+    return videoMap.values.toList();
+  }
+
+  // void fetchMoreVideos() {
+  //   print("Fetch more videos method called ${state.hasMore}");
+  //   if (state.hasMore) {
+  //     final stream = videoRepository?.getVideoListStream();
+  //     stream?.listen((videoList) async {
+  //
+  //       List<VideoPlayerController> videoController = await initializeVideoControllers(videoList.data!);
+  //
+  //       print("Fetch more videos method video length ${videoList.data?.length}");
+  //
+  //       if(videoList.data?.length==0){
+  //        state = state.copyWith(hasMore: false);
+  //       }
+  //       else {
+  //         state = state.copyWith(
+  //             videoListResult: Resource.success(
+  //                 data: [...?state.videoListResult?.data, ...videoList.data!]
+  //             ),
+  //             hasMore: true,
+  //             videoControllerList: [
+  //               ...state.videoControllerList!,
+  //               ...videoController
+  //             ]
+  //
+  //         );
+  //       }
+  //     });
+  //   }
+  // }
 
 
 
@@ -69,7 +136,7 @@ class VideoProvider extends StateNotifier<VideoState> {
     // Use Future.wait to wait for all video controllers to initialize
     List<Future<VideoPlayerController>> controllerFutures = videoList.map((videoModel) async {
       VideoPlayerController controller = VideoPlayerController.networkUrl(
-        Uri.parse(videoModel.videoUrl!),
+        Uri.parse(videoModel.videoUrl!),videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true,webOptions: VideoPlayerWebOptions(allowRemotePlayback: true,controls: VideoPlayerWebOptionsControls.enabled(allowDownload: true,allowFullscreen: true,allowPlaybackRate: true,allowPictureInPicture: true)))
       );
       await controller.initialize();
       return controller;
@@ -126,8 +193,8 @@ class VideoProvider extends StateNotifier<VideoState> {
 
   getProfileDetails(){
 
-    profileRepository?.getUserDetails(uid: FirebaseAuth.instance?.currentUser?.uid!.toString())?.listen((ref){
-      state = state.copyWith(otherProfileDetails:ref!);
+    profileRepository?.getUserDetails(uid: FirebaseAuth.instance.currentUser?.uid.toString())?.listen((ref){
+      state = state.copyWith(otherProfileDetails:ref);
     });
 
   }
@@ -135,6 +202,26 @@ class VideoProvider extends StateNotifier<VideoState> {
   firstState(){
 
     state = state.copyWith(isPlaying: true);
+  }
+
+
+  // Optimistically update the comment count
+  void incrementCommentCountOptimistically(String videoId) {
+    // Find the video index
+    var videoIndex = state.videoListResult?.data?.indexWhere((video) => video.id == videoId);
+
+    if (videoIndex != null && videoIndex != -1) {
+      // Get the video and increment the comment count
+      var video = state.videoListResult?.data?[videoIndex];
+      video?.commentCount = (video.commentCount ?? 0) + 1;
+
+      // Update the state to reflect changes
+      state = state.copyWith(
+        videoListResult: Resource.success(
+          data: [...state.videoListResult?.data ?? []],
+        ),
+      );
+    }
   }
 }
 

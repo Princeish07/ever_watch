@@ -31,9 +31,9 @@ class HomeScreen extends ConsumerWidget {
       },),
       body: Container(
         color: Colors.white,
-        child: Center(
-          child: ref.read(homeProvider.notifier).mainPages[homeState.currentPage!]
-
+        child:IndexedStack(
+          index: homeState.currentPage!, // Display the page corresponding to the current index
+          children: ref.read(homeProvider.notifier).mainPages, // List of all pages
         ),
       ),
     );

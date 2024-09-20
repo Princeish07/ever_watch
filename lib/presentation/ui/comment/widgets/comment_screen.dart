@@ -77,7 +77,7 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                               onPressed: () {
                                 ref.watch(commentProvider.notifier).sendComment(
                                     id: widget.id.toString(),
-                                    comment: commentController.text.toString());
+                                    comment: commentController.text.toString(),ref: ref);
                               },
                               icon: Icon(Icons.send))
                         ],

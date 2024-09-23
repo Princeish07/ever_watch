@@ -110,8 +110,7 @@ class _VideoScreenState extends ConsumerState<VideoScreen> with AutomaticKeepAli
                             videoUrl: itemValue?[index].videoUrl ?? "",
                             onDoubleTap: () {
                               ref
-                                  .read(videoProvider.notifier)
-                                  ?.likingVideo(id: itemValue?[index].id);
+                                  .read(videoProvider.notifier).likingVideo(id: itemValue?[index].id);
                       },
                             videoModel: itemValue?[index],
                           ),

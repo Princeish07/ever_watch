@@ -1,17 +1,22 @@
+import 'package:camera/camera.dart';
 import 'package:ever_watch/presentation/ui/VideoPlayer.dart';
 import 'package:ever_watch/presentation/ui/home/widgets/home_screen.dart';
 import 'package:ever_watch/presentation/ui/login/widgets/login_screen.dart';
+import 'package:ever_watch/presentation/ui/main_camera_view/widgets/main_camera_view_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/service_locator/service_locator.dart';
+late List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   serviceLocatorSetup();
   await Firebase.initializeApp();
+  cameras = await availableCameras();
+
   runApp(ProviderScope(child: const MyApp()));
 }
 
@@ -42,7 +47,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ProviderScope(child:FirebaseAuth.instance.currentUser==null ? LoginScreen() : HomeScreen()),
+      home: ProviderScope(child:FirebaseAuth.instance.currentUser==null ? LoginScreen() : MainCameraView()),
     );
   }
 }

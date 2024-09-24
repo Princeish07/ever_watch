@@ -52,8 +52,10 @@ class _MainCameraViewState extends State<MainCameraView> {
                 Container(
                   child: Column(
                     children: [
-                      Container(padding: EdgeInsets.all(20),decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),color: Colors.red.withOpacity(0.5)),child: Text("Add Music"),)
-                      ,Row(
+                      Container(padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)),color: Colors.red[200]),child: Text("Add Music +",style: TextStyle(color: Colors.white),),)
+                      ,
+                      const Spacer(),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Spacer(),
@@ -65,6 +67,28 @@ class _MainCameraViewState extends State<MainCameraView> {
                             ],
                           )
                   
+                        ],
+                      ),
+                      const Spacer(),
+                      Stack(               // Align elements inside Row
+
+                        children: [
+                          Align(alignment: Alignment.bottomLeft,child: IconButton(onPressed: (){}, icon: const Icon(Icons.filter,color: Colors.white,),color: Colors.red.withOpacity(0.5),)),
+                          // Spacer(),
+
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircleAvatar(
+                                radius: 45,
+                                  backgroundColor: Colors.white,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CircleAvatar(backgroundColor: Colors.red,radius: 50,),
+                                  )),
+                            ),
+                          ),
                         ],
                       )
                     ],
